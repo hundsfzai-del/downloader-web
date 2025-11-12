@@ -35,8 +35,9 @@ The app is designed so it can later be frozen into an executable. For now you ca
 - Pick a specific format from the dropdown or keep the default "Auto (best)".
 - Toggle **Convert to MP3 (audio only)** to extract audio with FFmpeg (bundled with `yt-dlp`).
 - Provide a custom output template (defaults to `%(title)s [%(id)s].%(ext)s`).
-- Choose the destination folder (defaults to your configured download directory).
-- After a download finishes, direct links appear so you can retrieve the files from the browser.
+- Choose the destination folder (defaults to your Downloads directory, which you can override in settings).
+- Scan the condensed format table with quick filters (recommended/video/audio) and live search to jump to the stream you need.
+- After a download finishes, toast notifications, an activity sidebar, and inline links make it easy to grab the files immediately.
 
 ### Bulk download
 
