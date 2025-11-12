@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Downloader Web</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+      integrity="sha512-oHDEc8Xed0r3yPld5bJaoVqfh0bXkJSUV5zA7mkQb5l1MF7x0bCX1k0jVgR8ZCvGSyEtFPoq0P5uQxZ85R5bAg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <h1>Downloader control center</h1>
+        <p>Paste a link, explore formats, and grab the media you need in seconds.</p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="workspace">
+        <nav class="tabs" role="tablist">
+          <button class="tab is-active" role="tab" data-target="single-download">Single download</button>
+          <button class="tab" role="tab" data-target="bulk-download">Bulk download</button>
+          <button class="tab" role="tab" data-target="settings">Settings</button>
+        </nav>
+
+        <section class="card tab-panel is-active" id="single-download" role="tabpanel">
+          <header class="panel-header">
+            <h2>Single download</h2>
+            <p>Fetch available formats, preview details, and download audio or video.</p>
+          </header>
+
+          <form id="single-form" class="stack">
+            <label class="field">
+              <span>Media URL</span>
+              <input type="url" id="single-url" placeholder="https://" required />
+            </label>
+
+            <div class="actions">
+              <button type="button" id="fetch-info" class="secondary">Check available formats</button>
+              <button type="submit" class="primary">Download</button>
+            </div>
+
+            <div class="options">
+              <label class="field">
+                <span>Choose format</span>
+                <select id="format-select"></select>
+              </label>
+              <label class="field checkbox">
+                <input type="checkbox" id="audio-only" />
+                <span>Convert to MP3 (audio only)</span>
+              </label>
+              <label class="field">
+                <span>Output template</span>
+                <input type="text" id="output-template" placeholder="%(title)s [%(id)s].%(ext)s" />
+              </label>
+              <label class="field">
+                <span>Save to folder</span>
+                <input type="text" id="single-target" placeholder="{{ config.download_dir }}" />
+                <small>Leave blank to use your Downloads folder.</small>
+              </label>
+            </div>
+          </form>
+
+          <article class="info" id="info-panel" hidden>
+            <div class="info__header">
+              <img id="info-thumbnail" alt="Preview" />
+              <div class="info__meta">
+                <h3 id="info-title"></h3>
+                <p id="info-uploader" class="muted"></p>
+                <p id="info-duration" class="muted"></p>
+              </div>
+            </div>
+            <p id="info-description" class="info__description"></p>
+
+            <section class="formats" id="format-section">
+              <header class="formats__toolbar">
+                <div class="chip-group" id="format-type-filter">
+                  <button type="button" class="chip is-active" data-filter="recommended">Recommended</button>
+                  <button type="button" class="chip" data-filter="video">Video</button>
+                  <button type="button" class="chip" data-filter="audio">Audio</button>
+                  <button type="button" class="chip" data-filter="all">All formats</button>
+                </div>
+                <label class="search">
+                  <span class="sr-only">Search formats</span>
+                  <input type="search" id="format-search" placeholder="Search by id, resolution, codec…" />
+                </label>
+              </header>
+
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Extension</th>
+                      <th>Resolution / Bitrate</th>
+                      <th>Video</th>
+                      <th>Audio</th>
+                      <th>Size</th>
+                    </tr>
+                  </thead>
+                  <tbody id="format-table"></tbody>
+                </table>
+              </div>
+            </section>
+          </article>
+
+          <div class="status" id="single-status">
+            <div class="status__message"></div>
+            <div class="status__downloads"></div>
+          </div>
+        </section>
+
+        <section class="card tab-panel" id="bulk-download" role="tabpanel" aria-hidden="true">
+          <header class="panel-header">
+            <h2>Bulk downloader</h2>
+            <p>Queue multiple URLs, optionally zip the results, and grab them in one go.</p>
+          </header>
+
+          <form id="bulk-form" class="stack">
+            <label class="field">
+              <span>Paste one link per line</span>
+              <textarea id="bulk-urls" rows="6" placeholder="https://example.com/clip-1"></textarea>
+            </label>
+            <label class="field">
+              <span>Or upload a .txt file</span>
+              <input type="file" id="bulk-file" accept="text/plain" />
+            </label>
+
+            <div class="options">
+              <label class="field">
+                <span>Format ID (optional)</span>
+                <input type="text" id="bulk-format" placeholder="best" />
+              </label>
+              <label class="field checkbox">
+                <input type="checkbox" id="bulk-audio-only" />
+                <span>Convert to MP3</span>
+              </label>
+              <label class="field checkbox">
+                <input type="checkbox" id="bulk-archive" />
+                <span>Create ZIP archive</span>
+              </label>
+              <label class="field">
+                <span>Output template</span>
+                <input type="text" id="bulk-template" placeholder="%(title)s [%(id)s].%(ext)s" />
+              </label>
+              <label class="field">
+                <span>Save to folder</span>
+                <input type="text" id="bulk-target" placeholder="{{ config.download_dir }}" />
+                <small>Leave blank to use your Downloads folder.</small>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="primary">Start bulk download</button>
+            </div>
+          </form>
+
+          <div class="status" id="bulk-status">
+            <div class="status__message"></div>
+            <div class="status__downloads"></div>
+          </div>
+        </section>
+
+        <section class="card tab-panel" id="settings" role="tabpanel" aria-hidden="true">
+          <header class="panel-header">
+            <h2>Settings</h2>
+            <p>Adjust global behaviour such as the default download folder and archiving.</p>
+          </header>
+
+          <form id="settings-form" class="stack">
+            <label class="field">
+              <span>Default download folder</span>
+              <input type="text" id="settings-directory" value="{{ config.download_dir }}" />
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="settings-archive" {% if config.auto_archive_bulk %}checked{% endif %} />
+              <span>Always archive bulk downloads</span>
+            </label>
+            <div class="actions">
+              <button type="submit" class="primary">Save settings</button>
+            </div>
+          </form>
+
+          <div class="status" id="settings-status">
+            <div class="status__message"></div>
+            <div class="status__downloads"></div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="card activity" id="activity-panel">
+        <div class="panel-header">
+          <h2>Activity</h2>
+          <p class="muted">Downloads and bulk jobs appear here.</p>
+        </div>
+        <ul id="activity-list" class="activity__list"></ul>
+        <p id="activity-empty" class="activity__empty muted">No downloads yet.</p>
+      </aside>
+    </main>
+
+    <template id="download-link-template">
+      <div class="download-link">
+        <span class="file"></span>
+        <a class="button" target="_blank" rel="noopener">Download</a>
+      </div>
+    </template>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>
