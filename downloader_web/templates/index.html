@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Downloader Web</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-oHDEc8Xed0r3yPld5bJaoVqfh0bXkJSUV5zA7mkQb5l1MF7x0bCX1k0jVgR8ZCvGSyEtFPoq0P5uQxZ85R5bAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <h1>Downloader control center</h1>
+        <p>Paste a link, explore its formats, and download audio or video with ease.</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card" id="single-download">
+        <h2>Single download</h2>
+        <form id="single-form">
+          <label>
+            Media URL
+            <input type="url" id="single-url" placeholder="https://" required />
+          </label>
+
+          <div class="actions">
+            <button type="button" id="fetch-info">Check available formats</button>
+            <button type="submit" class="primary">Download</button>
+          </div>
+
+          <div class="options">
+            <label>
+              <span>Format</span>
+              <select id="format-select"></select>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="audio-only" />
+              <span>Convert to MP3 (audio only)</span>
+            </label>
+            <label>
+              Output template
+              <input type="text" id="output-template" placeholder="%(title)s [%(id)s].%(ext)s" />
+            </label>
+          </div>
+
+          <label>
+            Save to folder
+            <input type="text" id="single-target" value="{{ config.download_dir }}" placeholder="{{ config.download_dir }}" />
+          </label>
+        </form>
+
+        <article class="info" id="info-panel" hidden>
+          <div class="info__header">
+            <img id="info-thumbnail" alt="Preview" />
+            <div>
+              <h3 id="info-title"></h3>
+              <p id="info-uploader"></p>
+              <p id="info-duration"></p>
+            </div>
+          </div>
+          <p id="info-description"></p>
+
+          <h4>Available formats</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Extension</th>
+                  <th>Resolution</th>
+                  <th>Video</th>
+                  <th>Audio</th>
+                  <th>Size</th>
+                </tr>
+              </thead>
+              <tbody id="format-table"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <div class="status" id="single-status"></div>
+      </section>
+
+      <section class="card" id="bulk-download">
+        <h2>Bulk downloader</h2>
+        <form id="bulk-form">
+          <label>
+            Paste one link per line
+            <textarea id="bulk-urls" rows="6" placeholder="https://example.com/clip-1"></textarea>
+          </label>
+          <label>
+            Or upload a .txt file
+            <input type="file" id="bulk-file" accept="text/plain" />
+          </label>
+
+          <div class="options">
+            <label>
+              <span>Format ID (optional)</span>
+              <input type="text" id="bulk-format" placeholder="best" />
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="bulk-audio-only" />
+              <span>Convert to MP3</span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="bulk-archive" />
+              <span>Create ZIP archive</span>
+            </label>
+            <label>
+              Output template
+              <input type="text" id="bulk-template" placeholder="%(title)s [%(id)s].%(ext)s" />
+            </label>
+          </div>
+
+          <label>
+            Save to folder
+            <input type="text" id="bulk-target" value="{{ config.download_dir }}" placeholder="{{ config.download_dir }}" />
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="primary">Start bulk download</button>
+          </div>
+        </form>
+
+        <div class="status" id="bulk-status"></div>
+      </section>
+
+      <section class="card" id="settings">
+        <h2>Settings</h2>
+        <form id="settings-form">
+          <label>
+            Default download folder
+            <input type="text" id="settings-directory" value="{{ config.download_dir }}" />
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="settings-archive" {% if config.auto_archive_bulk %}checked{% endif %} />
+            <span>Always archive bulk downloads</span>
+          </label>
+          <div class="actions">
+            <button type="submit" class="primary">Save settings</button>
+          </div>
+        </form>
+        <div class="status" id="settings-status"></div>
+      </section>
+    </main>
+
+    <template id="download-link-template">
+      <div class="download-link">
+        <span class="file"></span>
+        <a class="button" target="_blank" rel="noopener">Download</a>
+      </div>
+    </template>
+
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>
