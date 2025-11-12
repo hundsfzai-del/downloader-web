@@ -44,7 +44,7 @@ The app is designed so it can later be frozen into an executable. For now you ca
 - Paste multiple URLs (one per line) or upload a text file containing the links.
 - Reuse the same format selector and audio-only toggle as in the single form.
 - Automatically zip the results with the **Create ZIP archive** option (or enable auto-archive in settings).
-- Watch for warnings or errors after the run—successful downloads still produce their own links even if some URLs fail and appear in the activity feed.
+- Watch for warnings or errors after the run—successful downloads still produce their own links even if some URLs fail.
 
 ### Settings
 
@@ -64,6 +64,6 @@ Place the resulting binary on your `PATH` so you can run `downloader` from the c
 
 ## Notes
 
-- Downloads are stored in the configured directory (default: `~/Downloads`).
+- Downloads are stored in the configured directory (default: `~/downloader_web_downloads`).
 - The `/files` endpoint only serves files from that directory for safety.
 - `yt-dlp` relies on FFmpeg for format conversions; make sure it is installed and accessible on your system path if you plan to convert or merge media.

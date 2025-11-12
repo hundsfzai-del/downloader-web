@@ -9,9 +9,7 @@ class ConfigManager:
     """Simple configuration helper persisted to a JSON file."""
 
     DEFAULTS: Dict[str, Any] = {
-        # Default to the system's Downloads folder to mirror common browser
-        # behaviour and make it easier for users to locate retrieved files.
-        "download_dir": str(Path.home() / "Downloads"),
+        "download_dir": str(Path.home() / "downloader_web_downloads"),
         "auto_archive_bulk": False,
     }
 
